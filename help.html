@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ckb">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wood World - هەڵپ</title>
+    <style>
+        /* ===== ڕێسا بنەڕەتییەکان ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===== فۆنتی کوردی ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+
+        @font-face {
+            font-family: 'Peshang Kurdish';
+            src: url('https://cdn.jsdelivr.net/gh/ew3sha/ew3sha-fonts@main/Peshang/Peshang-Regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Peshang Kurdish';
+            src: url('https://cdn.jsdelivr.net/gh/ew3sha/ew3sha-fonts@main/Peshang/Peshang-Bold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Peshang Kurdish';
+            src: url('https://cdn.jsdelivr.net/gh/ew3sha/ew3sha-fonts@main/Peshang/Peshang-Light.woff2') format('woff2');
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: #1a0f0a;
+            overflow-x: hidden;
+            position: relative;
+            direction: rtl;
+            transition: background-color 0.5s ease;
+        }
+
+        /* ===== باکگراوندی جوڵاوی قاوەیی ===== */
+        .wood-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+
+        .wood-bg .bg-layer {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(120, 70, 40, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 30%, rgba(90, 55, 30, 0.20) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(140, 90, 50, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 20%, rgba(100, 60, 35, 0.10) 0%, transparent 40%),
+                linear-gradient(145deg, #1a0f0a, #251810, #1a0f0a, #2d1a0e);
+            background-size: 100% 100%;
+            animation: woodGlow 10s ease-in-out infinite alternate;
+            transition: opacity 0.8s ease;
+        }
+
+        .wood-bg.hidden {
+            opacity: 0;
+        }
+
+        @keyframes woodGlow {
+            0% {
+                background:
+                    radial-gradient(ellipse at 20% 50%, rgba(120, 70, 40, 0.25) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 30%, rgba(90, 55, 30, 0.20) 0%, transparent 50%),
+                    radial-gradient(ellipse at 50% 80%, rgba(140, 90, 50, 0.15) 0%, transparent 50%),
+                    radial-gradient(ellipse at 30% 20%, rgba(100, 60, 35, 0.10) 0%, transparent 40%),
+                    linear-gradient(145deg, #1a0f0a, #251810, #1a0f0a, #2d1a0e);
+            }
+            33% {
+                background:
+                    radial-gradient(ellipse at 60% 40%, rgba(130, 80, 45, 0.30) 0%, transparent 55%),
+                    radial-gradient(ellipse at 20% 70%, rgba(80, 50, 25, 0.20) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 60%, rgba(150, 100, 60, 0.15) 0%, transparent 45%),
+                    radial-gradient(ellipse at 40% 10%, rgba(110, 65, 40, 0.12) 0%, transparent 40%),
+                    linear-gradient(145deg, #251810, #1a0f0a, #2d1a0e, #1a0f0a);
+            }
+            66% {
+                background:
+                    radial-gradient(ellipse at 70% 20%, rgba(140, 90, 50, 0.25) 0%, transparent 50%),
+                    radial-gradient(ellipse at 30% 80%, rgba(100, 60, 35, 0.25) 0%, transparent 55%),
+                    radial-gradient(ellipse at 50% 30%, rgba(160, 110, 70, 0.12) 0%, transparent 50%),
+                    radial-gradient(ellipse at 80% 70%, rgba(120, 70, 40, 0.10) 0%, transparent 40%),
+                    linear-gradient(145deg, #1a0f0a, #2d1a0e, #251810, #1a0f0a);
+            }
+            100% {
+                background:
+                    radial-gradient(ellipse at 40% 60%, rgba(110, 65, 40, 0.30) 0%, transparent 55%),
+                    radial-gradient(ellipse at 60% 80%, rgba(130, 80, 45, 0.20) 0%, transparent 50%),
+                    radial-gradient(ellipse at 20% 30%, rgba(90, 55, 30, 0.15) 0%, transparent 45%),
+                    radial-gradient(ellipse at 70% 50%, rgba(150, 100, 60, 0.10) 0%, transparent 40%),
+                    linear-gradient(145deg, #2d1a0e, #1a0f0a, #251810, #1a0f0a);
+            }
+        }
+
+        /* ===== تەختەکانی قاوەیی ===== */
+        .wood-particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            transition: opacity 0.8s ease;
+        }
+
+        .wood-particles.hidden {
+            opacity: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(ellipse, rgba(160, 110, 70, 0.06), rgba(100, 65, 35, 0.02));
+            border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%;
+            animation: floatParticle 14s infinite alternate ease-in-out;
+            box-shadow: inset 0 0 80px rgba(139, 90, 50, 0.04), 0 0 40px rgba(100, 65, 35, 0.02);
+        }
+        .particle:nth-child(1) { width: 400px; height: 280px; top: 5%; left: -8%; animation-duration: 16s; animation-delay: 0s; transform: rotate(15deg); }
+        .particle:nth-child(2) { width: 500px; height: 300px; bottom: 0%; right: -12%; animation-duration: 20s; animation-delay: 2s; transform: rotate(-20deg); }
+        .particle:nth-child(3) { width: 250px; height: 350px; top: 40%; left: 30%; animation-duration: 18s; animation-delay: 4s; transform: rotate(40deg); }
+        .particle:nth-child(4) { width: 200px; height: 300px; top: 15%; right: 10%; animation-duration: 22s; animation-delay: 1s; transform: rotate(-35deg); }
+        .particle:nth-child(5) { width: 450px; height: 200px; bottom: 15%; left: 15%; animation-duration: 17s; animation-delay: 3s; transform: rotate(8deg); }
+        .particle:nth-child(6) { width: 180px; height: 400px; top: 50%; right: 30%; animation-duration: 19s; animation-delay: 5s; transform: rotate(25deg); }
+
+        @keyframes floatParticle {
+            0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 0.5; }
+            25% { transform: translate(35px,-50px) rotate(6deg) scale(1.06); opacity: 0.8; }
+            50% { transform: translate(-25px,40px) rotate(-4deg) scale(0.94); opacity: 0.6; }
+            75% { transform: translate(45px,25px) rotate(5deg) scale(1.03); opacity: 0.9; }
+            100% { transform: translate(-35px,-30px) rotate(-3deg) scale(1); opacity: 0.5; }
+        }
+
+        /* ===== لقی دار ===== */
+        .branches {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.06;
+            transition: opacity 0.8s ease;
+        }
+        .branches.hidden { opacity: 0; }
+        .branches svg { width: 100%; height: 100%; }
+
+        /* ===== مێنوو ===== */
+        .menu-toggle {
+            position: fixed;
+            top: 24px;
+            right: 28px;
+            z-index: 1000;
+            background: rgba(212, 163, 115, 0.06);
+            border: 1px solid rgba(212, 163, 115, 0.08);
+            color: rgba(212, 163, 115, 0.4);
+            font-size: 28px;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border-radius: 0;
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            line-height: 1;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(212, 163, 115, 0.12);
+            border-color: rgba(212, 163, 115, 0.2);
+            color: #d4a373;
+            transform: scale(1.04);
+        }
+
+        .menu-dropdown {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 280px;
+            height: 100vh;
+            z-index: 999;
+            background: rgba(13, 8, 5, 0.95);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-left: 1px solid rgba(212, 163, 115, 0.06);
+            padding: 80px 30px 40px;
+            transition: right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .menu-dropdown.open { right: 0; }
+
+        .menu-dropdown .close-menu {
+            position: absolute;
+            top: 20px;
+            left: 24px;
+            background: none;
+            border: none;
+            color: rgba(212, 163, 115, 0.2);
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .menu-dropdown .close-menu:hover {
+            color: rgba(212, 163, 115, 0.5);
+            transform: rotate(90deg);
+        }
+
+        .menu-dropdown .menu-brand-side {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: transparent;
+            background: linear-gradient(135deg, #d4a373, #f5e6ca, #c9956b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(212, 163, 115, 0.04);
+        }
+
+        .menu-dropdown a {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.3);
+            text-decoration: none;
+            padding: 14px 18px;
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: all 0.4s ease;
+            border-radius: 0;
+            border-right: 2px solid transparent;
+        }
+
+        .menu-dropdown a:hover {
+            color: #d4a373;
+            background: rgba(212, 163, 115, 0.04);
+            border-right-color: rgba(212, 163, 115, 0.2);
+            padding-right: 24px;
+        }
+
+        .menu-dropdown a.active {
+            color: #d4a373;
+            border-right-color: rgba(212, 163, 115, 0.3);
+        }
+
+        .menu-location {
+            margin-top: 8px;
+            padding: 14px 18px;
+            border-top: 1px solid rgba(212, 163, 115, 0.04);
+            border-bottom: 1px solid rgba(212, 163, 115, 0.04);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .menu-location:hover { background: rgba(212, 163, 115, 0.04); }
+
+        .menu-location .loc-label {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.15);
+            font-size: 11px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .menu-location .loc-text {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.3);
+            font-size: 14px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .menu-location:hover .loc-text { color: #d4a373; }
+
+        .menu-location .loc-text .loc-icon {
+            color: rgba(212, 163, 115, 0.2);
+            font-size: 16px;
+        }
+
+        .menu-dropdown .menu-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(212, 163, 115, 0.04);
+            color: rgba(212, 163, 115, 0.06);
+            font-size: 11px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        /* ===== ناوەڕۆکی هەڵپ ===== */
+        .help-page {
+            position: relative;
+            z-index: 1;
+            max-width: 740px;
+            margin: 80px auto 60px;
+            padding: 40px 36px;
+            background: rgba(26, 15, 10, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(212, 163, 115, 0.06);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .help-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .help-header h1 {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', serif;
+            font-size: clamp(28px, 4vw, 38px);
+            font-weight: 700;
+            color: transparent;
+            background: linear-gradient(135deg, #d4a373, #f5e6ca, #c9956b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .help-header p {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.3);
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .help-header .divider {
+            width: 50px;
+            height: 1px;
+            margin: 14px auto;
+            background: linear-gradient(90deg, transparent, rgba(212, 163, 115, 0.2), transparent);
+        }
+
+        /* ===== لیستی هەڵپ ===== */
+        .help-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .help-item {
+            padding: 18px 22px;
+            background: rgba(212, 163, 115, 0.02);
+            border-radius: 14px;
+            border: 1px solid rgba(212, 163, 115, 0.04);
+            border-right: 3px solid rgba(212, 163, 115, 0.15);
+            transition: all 0.4s ease;
+        }
+
+        .help-item:hover {
+            background: rgba(212, 163, 115, 0.04);
+            border-color: rgba(212, 163, 115, 0.08);
+            transform: translateX(4px);
+        }
+
+        .help-item .help-title {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.6);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .help-item .help-desc {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.25);
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        /* ===== بۆکسی پەیوەندی ===== */
+        .help-contact {
+            margin-top: 28px;
+            padding: 20px 24px;
+            background: rgba(212, 163, 115, 0.03);
+            border-radius: 14px;
+            border: 1px solid rgba(212, 163, 115, 0.04);
+            text-align: center;
+        }
+
+        .help-contact p {
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            color: rgba(212, 163, 115, 0.25);
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .help-contact .contact-highlight {
+            color: rgba(212, 163, 115, 0.5);
+            font-weight: 500;
+        }
+
+        /* ===== ژمارەی خوارەوە ===== */
+        .footer-info {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px 20px 20px;
+            color: rgba(212, 163, 115, 0.06);
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-family: 'Peshang Kurdish', 'Noto Naskh Arabic', sans-serif;
+            font-weight: 300;
+        }
+
+        /* ===== ڕیسپۆنسیڤ ===== */
+        @media (max-width: 768px) {
+            .help-page {
+                margin: 70px 16px 40px;
+                padding: 28px 20px;
+            }
+            .menu-toggle { top: 16px; right: 18px; font-size: 22px; padding: 4px 12px; }
+            .menu-dropdown { width: 240px; right: -280px; padding: 70px 20px 30px; }
+        }
+
+        @media (max-width: 480px) {
+            .help-page {
+                margin: 60px 12px 30px;
+                padding: 20px 16px;
+            }
+            .help-header h1 { font-size: 24px; }
+            .help-item { padding: 14px 16px; }
+            .help-item .help-title { font-size: 14px; }
+            .help-item .help-desc { font-size: 13px; }
+            .help-contact { padding: 16px; }
+            .help-contact p { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== باکگراوند ===== -->
+    <div class="wood-bg" id="woodBg">
+        <div class="bg-layer"></div>
+    </div>
+    <div class="wood-particles" id="woodParticles">
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div>
+    </div>
+    <div class="branches" id="woodBranches">
+        <svg viewBox="0 0 1000 800" preserveAspectRatio="none">
+            <path d="M100,800 Q200,600 150,500 Q100,400 200,350 Q300,300 250,200 Q200,100 350,50" stroke="rgba(212,163,115,0.3)" stroke-width="1.5" fill="none"/>
+            <path d="M250,200 Q300,250 350,220 Q400,190 380,150" stroke="rgba(212,163,115,0.2)" stroke-width="1" fill="none"/>
+            <path d="M200,350 Q280,380 320,320 Q360,260 420,280" stroke="rgba(212,163,115,0.2)" stroke-width="1" fill="none"/>
+            <path d="M900,800 Q850,600 880,500 Q910,400 850,350 Q790,300 820,200 Q850,100 750,40" stroke="rgba(212,163,115,0.3)" stroke-width="1.5" fill="none"/>
+            <path d="M820,200 Q780,240 740,210 Q700,180 710,130" stroke="rgba(212,163,115,0.2)" stroke-width="1" fill="none"/>
+            <path d="M850,350 Q800,370 770,310 Q740,250 680,270" stroke="rgba(212,163,115,0.2)" stroke-width="1" fill="none"/>
+            <path d="M350,50 Q400,80 430,30" stroke="rgba(212,163,115,0.15)" stroke-width="0.8" fill="none"/>
+            <path d="M750,40 Q700,70 670,20" stroke="rgba(212,163,115,0.15)" stroke-width="0.8" fill="none"/>
+            <path d="M150,500 Q120,450 80,470" stroke="rgba(212,163,115,0.15)" stroke-width="0.8" fill="none"/>
+            <path d="M880,500 Q910,450 950,480" stroke="rgba(212,163,115,0.15)" stroke-width="0.8" fill="none"/>
+        </svg>
+    </div>
+
+    <!-- ===== دوگمەی مێنوو ===== -->
+    <button class="menu-toggle" id="menuToggle">☰</button>
+
+    <!-- ===== مێنوو ===== -->
+    <nav class="menu-dropdown" id="menuDropdown">
+        <button class="close-menu" id="menuClose">✕</button>
+        <div class="menu-brand-side">Wood World</div>
+        <a href="homepage.html">🏠 پەڕەی سەرەکی</a>
+        <a href="gallery.html">🖼️ گەلەری</a>
+        <a href="settings.html">⚙️ ستینگ</a>
+        <a href="help.html" class="active">❓ هەڵپ</a>
+
+        <a href="https://www.google.com/maps/place/Erbil,+Kurdistan+Region/@36.1912,44.0092,12z" 
+           class="menu-location" 
+           target="_blank">
+            <div class="loc-label">📍 شوێن</div>
+            <div class="loc-text">
+                <span class="loc-icon">📍</span>
+                <span>هەولێر، کوردستان</span>
+            </div>
+        </a>
+
+        <div class="menu-footer">© 2026 Wood World</div>
+    </nav>
+
+    <!-- ===== ناوەڕۆکی هەڵپ ===== -->
+    <main class="help-page">
+        <div class="help-header">
+            <h1>❓ هەڵپ / یارمەتی</h1>
+            <div class="divider"></div>
+            <p>ڕێنمایی و زانیاری دەربارەی وێبسایتەکە</p>
+        </div>
+
+        <div class="help-list">
+            <div class="help-item">
+                <div class="help-title">📸 گەلەری</div>
+                <div class="help-desc">
+                    کلیک لەسەر هەر وێنەیەک بکە، زانیاری و پەیوەندی پیشان دەدرێت. 
+                    دوگمەی "وێنەی دیکە" بەکاربهێنە بۆ گەڕان بە ناو وێنەکاندا. 
+                    هەروەها دەتوانیت کلیلی <strong>→</strong> و <strong>←</strong> لەسەر تەختەکلیل بەکاربهێنیت.
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-title">🎨 ستینگ (ڕێکخستنەکان)</div>
+                <div class="help-desc">
+                    ڕەنگ یان نەخشی پشتەوە بگۆڕە بەپێی ئارەزووی خۆت. 
+                    هەڵبژاردنەکانت لە <strong>بیری وێبگەڕەکەت</strong>دا پاشەکەوت دەکرێن 
+                    و لە هەموو پەڕەکاندا کاردەکەن.
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-title">☰ مێنوو</div>
+                <div class="help-desc">
+                    لە لای چەپەوە مێنوو دەکەیتەوە بۆ گەڕان بە ناو پەڕەکاندا. 
+                    کلیک لەسەر <strong>☰</strong> بکە بۆ کردنەوەی مێنوو، 
+                    و کلیک لەسەر <strong>✕</strong> بۆ داخستنی.
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-title">📍 شوێن (لۆکەیشن)</div>
+                <div class="help-desc">
+                    کلیک لەسەر بەشی شوێن لە مێنوودا بکە، 
+                    ڕاستەوخۆ دەچیتە <strong>گووگڵ مەپ</strong> بۆ بینینی شوێنی کۆمپانیاکەمان.
+                </div>
+            </div>
+
+            <div class="help-item">
+                <div class="help-title">📱 پەیوەندی</div>
+                <div class="help-desc">
+                    لە ڕێگەی <strong>واتساپ</strong> یان ژمارە مۆبایلەوە پەیوەندی بکە 
+                    بۆ داواکاری یان پرسیار. ژمارەکان لە ناو مۆدالی هەر وێنەیەکدا هەیە.
+                </div>
+            </div>
+        </div>
+
+        <div class="help-contact">
+            <p>
+                🌳 <span class="contact-highlight">Wood World</span> — جوانی دار لە هەر پارچەیەکدا<br />
+                هەموو کارەکان بە دەستی هونەرمەند دروست کراوە
+            </p>
+        </div>
+    </main>
+
+    <!-- ===== زانیاری خوارەوە ===== -->
+    <div class="footer-info">
+        <span>© 2026 Wood World • پەڕەی هەڵپ</span>
+    </div>
+
+    <!-- ===== جاڤاسکریپت ===== -->
+    <script>
+        // ===== مێنوو =====
+        const toggle = document.getElementById('menuToggle');
+        const dropdown = document.getElementById('menuDropdown');
+        const close = document.getElementById('menuClose');
+
+        toggle.addEventListener('click', function() {
+            dropdown.classList.toggle('open');
+        });
+
+        close.addEventListener('click', function() {
+            dropdown.classList.remove('open');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && e.target !== toggle) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // ===== بارکردنی ستینگە پاشەکەوتکراوەکان =====
+        function loadSettings() {
+            const savedColor = localStorage.getItem('woodworld_bgcolor');
+            const savedPattern = localStorage.getItem('woodworld_pattern');
+
+            const woodBg = document.getElementById('woodBg');
+            const woodParticles = document.getElementById('woodParticles');
+            const woodBranches = document.getElementById('woodBranches');
+            const body = document.body;
+
+            if (savedColor) {
+                body.style.backgroundColor = savedColor;
+                if (savedColor === '#0a0a0a' || savedColor === '#1a1a2e') {
+                    if (woodBg) woodBg.classList.add('hidden');
+                    if (woodParticles) woodParticles.classList.add('hidden');
+                    if (woodBranches) woodBranches.classList.add('hidden');
+                } else {
+                    if (woodBg) woodBg.classList.remove('hidden');
+                    if (woodParticles) woodParticles.classList.remove('hidden');
+                    if (woodBranches) woodBranches.classList.remove('hidden');
+                }
+            }
+
+            if (savedPattern && savedPattern !== 'default') {
+                if (savedPattern === 'none') {
+                    if (woodBg) woodBg.classList.add('hidden');
+                    if (woodParticles) woodParticles.classList.add('hidden');
+                    if (woodBranches) woodBranches.classList.add('hidden');
+                    body.style.backgroundImage = 'none';
+                } else if (savedPattern === 'wood') {
+                    if (woodBg) woodBg.classList.add('hidden');
+                    if (woodParticles) woodParticles.classList.remove('hidden');
+                    if (woodBranches) woodBranches.classList.remove('hidden');
+                    body.style.backgroundImage = "repeating-linear-gradient(90deg, rgba(139,90,43,0.15) 0px, rgba(160,110,60,0.10) 2px, rgba(120,75,35,0.20) 4px, rgba(100,65,30,0.10) 6px, rgba(139,90,43,0.15) 8px)";
+                } else if (savedPattern === 'lines') {
+                    if (woodBg) woodBg.classList.add('hidden');
+                    if (woodParticles) woodParticles.classList.add('hidden');
+                    if (woodBranches) woodBranches.classList.add('hidden');
+                    body.style.backgroundImage = "repeating-linear-gradient(45deg, rgba(212,163,115,0.05) 0px, rgba(212,163,115,0.05) 4px, transparent 4px, transparent 8px)";
+                } else if (savedPattern === 'dots') {
+                    if (woodBg) woodBg.classList.add('hidden');
+                    if (woodParticles) woodParticles.classList.add('hidden');
+                    if (woodBranches) woodBranches.classList.add('hidden');
+                    body.style.backgroundImage = "radial-gradient(circle, rgba(212,163,115,0.06) 1px, transparent 1px)";
+                    body.style.backgroundSize = '16px 16px';
+                }
+            }
+        }
+
+        loadSettings();
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'woodworld_bgcolor' || e.key === 'woodworld_pattern') {
+                loadSettings();
+            }
+        });
+
+        console.log('❓ Wood World - پەڕەی هەڵپ');
+    </script>
+
+</body>
+</html>
